@@ -1,0 +1,14 @@
+{
+	"name": "timemachine",
+	"version": "0.0.1",
+	"description": "Modify history in your git repository",
+	"keywords": ["git"],
+	"main": "./timemachine.js",
+	"dependencies": {
+		"underscore": "1.x.x",
+		"q": "0.8.9"
+	},
+	"engines": {
+		"node": "> 0.8.0"
+	}
+}
