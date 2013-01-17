@@ -1,9 +1,14 @@
 #!/usr/bin/env node
-var options = {
-	validCommitTimes: null,
-	onlyForAuthor: null,
-	onlyCommit: null
-}, params = [];
+var Git = require("./lib/git"),
+	path = require("path"),
+	repoPath = "",
+	repo = null,
+	options = {
+		validCommitTimes: null,
+		onlyForAuthor: null,
+		onlyCommit: null
+	},
+	params = [];
 
 process.on('uncaughtException', function (exception) {
 	console.log(exception);
@@ -17,6 +22,13 @@ if (options.validCommitTimes !== null) {
 	options.validCommitTimes = parseCommitTimes(options.validCommitTimes);
 }
 
+repoPath = path.resolve(params[0]);
+
+try {
+	repo = new Git(repoPath, false);
+} catch(e) {
+	throw new Error("TimeMachine :: Couldn't find git repository. Path supplied was: " + params[0]);
+}
 function convertArgvToOptionsAndParams(argv, options, params) {
 	var dashRegex = /^(-+)([^=]+)?=?(.+)/,
 		options = options || {},
