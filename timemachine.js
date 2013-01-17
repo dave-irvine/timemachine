@@ -36,6 +36,10 @@ try {
 repo.exec("log", {
 	pretty: 'format:"%H%x09%an%x09%ad"'
 }).then(function (stdout) {
+	parseRepoCommits(stdout);
+}).end();
+
+function parseRepoCommits(stdout) {
 	clu.outputIter(stdout, function (line) {
 		var commit = line.split("\t");
 		commit = new Git.Commit(commit[0], commit[1], commit[2]);
