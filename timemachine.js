@@ -4,6 +4,7 @@ var Git = require("./lib/git"),
 	clu = require("./lib/clu"),
 	repoPath = "",
 	repo = null,
+	commits = [],
 	options = {
 		validCommitTimes: null,
 		onlyForAuthor: null,
@@ -30,9 +31,16 @@ try {
 } catch(e) {
 	throw new Error("TimeMachine :: Couldn't find git repository. Path supplied was: " + params[0]);
 }
-		}
+
+repo.exec("log", {
+	pretty: 'format:"%H%x09%an%x09%ad"'
+}).then(function (stdout) {
+	clu.outputIter(stdout, function (line) {
+		var commit = line.split("\t");
+		commit = new Git.Commit(commit[0], commit[1], commit[2]);
+		commits.push(commit);
 	});
-}
+});
 
 function parseCommitTimes(commitTimes) {
 	var timeRanges = [],
