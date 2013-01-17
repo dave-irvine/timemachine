@@ -54,7 +54,12 @@ function convertArgvToOptionsAndParams(argv, options, params) {
 }
 
 function parseCommitTimes(commitTimes) {
-	var timeRanges = [];
+	var timeRanges = [],
+		rangeRegex = /:/;
+
+	if (!rangeRegex.test(commitTimes)) {
+		throw new Error("TimeMachine :: Time range not understood, expecting 'startTime:endTime' (0700:0800) near: " + commitTimes);
+	}
 
 	commitTimes = commitTimes.split(",");
 
