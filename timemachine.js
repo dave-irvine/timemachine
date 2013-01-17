@@ -5,6 +5,8 @@ var options = {
 	onlyCommit: null
 }, params = [];
 
+if (process.argv.length < 3) { throw new Error("TimeMachine :: Not enough options/parameters supplied."); }
+
 convertArgvToOptionsAndParams(process.argv.slice(2), options, params);
 
 if (options.validCommitTimes !== null) {
