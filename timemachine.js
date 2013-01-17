@@ -20,10 +20,11 @@ if (process.argv.length < 4) { throw new Error("TimeMachine :: Not enough option
 
 clu.convertArgvToOptionsAndParams(process.argv.slice(2), options, params);
 
-if (options.validCommitTimes !== null) {
-	options.validCommitTimes = parseCommitTimes(options.validCommitTimes);
+if (options.validCommitTimes === null) {
+	throw new Error("TimeMachine :: You must specify at least one valid time range to move commits into.");
 }
 
+options.validCommitTimes = parseCommitTimes(options.validCommitTimes);
 repoPath = path.resolve(params[0]);
 
 try {
