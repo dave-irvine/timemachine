@@ -18,7 +18,7 @@ if (options.validCommitTimes !== null) {
 }
 
 function convertArgvToOptionsAndParams(argv, options, params) {
-	var dashRegex = /^-+([^=]+)?=?(.+)/,
+	var dashRegex = /^(-+)([^=]+)?=?(.+)/,
 		options = options || {},
 		params = params || [];
 
@@ -30,9 +30,9 @@ function convertArgvToOptionsAndParams(argv, options, params) {
 
 		if (dashRegex.test(arg)) {
 			dashRegexMatches = dashRegex.exec(arg);
-			dashCount = dashRegexMatches[0].split("-").length - 1;
-			argName = dashRegexMatches[1];
-			argValue = dashRegexMatches[2];
+			dashCount = dashRegexMatches[1].split("-").length - 1;
+			argName = dashRegexMatches[2];
+			argValue = dashRegexMatches[3];
 		}
 		
 		if (dashCount === 1) {
