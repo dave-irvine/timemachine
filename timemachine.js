@@ -60,7 +60,10 @@ function parseRepoCommits(stdout) {
 	}
 
 	if (options.onlyForAuthor !== null) {
-		filterCommitsWithAuthor(commits, options.onlyForAuthor);
+		commits = filterCommitsWithAuthor(commits, options.onlyForAuthor);
+		if (commits.length < 1) {
+			throw new Error("TimeMachine :: Repo does not contain any commits by specified author: " + options.onlyForAuthor);
+		}
 	}
 }
 
@@ -78,6 +81,18 @@ function filterCommitsWithHash(commits, hash) {
 	}
 
 	return commitsWithHash;
+}
+
+function filterCommitsWithAuthor(commits, author) {
+	var commitsWithAuthor = [];
+
+	commits.forEach(function (commit) {
+		if (commit.author === author) {
+			commitsWithAuthor.push(commit);
+		}
+	});
+
+	return commitsWithAuthor;
 }
 
 function parseCommitTimes(commitTimes) {
