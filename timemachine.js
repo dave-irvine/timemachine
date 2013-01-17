@@ -45,7 +45,34 @@ function parseRepoCommits(stdout) {
 		commit = new Git.Commit(commit[0], commit[1], commit[2]);
 		commits.push(commit);
 	});
-});
+
+	if (options.onlyCommit) {
+		commits = filterCommitsWithHash(commits, options.onlyCommit);
+		if (commits.length < 1) {
+			throw new Error("TimeMachine :: Repo does not contain commit with specified hash: " + options.onlyCommit);
+		}
+	}
+
+	if (options.onlyForAuthor !== null) {
+		filterCommitsWithAuthor(commits, options.onlyForAuthor);
+	}
+}
+
+function filterCommitsWithHash(commits, hash) {
+	var commitsWithHash = [];
+
+	commits.forEach(function (commit) {
+		if (commit.hash === hash) {
+			commitsWithHash.push(commit);
+		}
+	});
+
+	if (commitsWithHash.length > 1) {
+		throw new Error("TimeMachine :: Repo has several commits with the same hash: " + hash);
+	}
+
+	return commitsWithHash;
+}
 
 function parseCommitTimes(commitTimes) {
 	var timeRanges = [],
