@@ -24,6 +24,12 @@ if (options.validCommitTimes === null) {
 	throw new Error("TimeMachine :: You must specify at least one valid time range to move commits into.");
 }
 
+if (options.onlyCommit !== null) {
+	if (options.onlyForAuthor !== null) {
+		throw new Error("TimeMachine :: --onlyCommit is an exclusive filter and cannot be mixed with others.");
+	}
+}
+
 options.validCommitTimes = parseCommitTimes(options.validCommitTimes);
 repoPath = path.resolve(params[0]);
 
