@@ -38,7 +38,10 @@ function convertArgvToOptionsAndParams(argv, options, params) {
 		} else if (dashCount === 2) {
 			if (options[argName] === undefined) {
 				throw new Error("TimeMachine :: Unknown option near: " + arg);
+			} else if (argValue === "=") {
+				throw new Error("TimeMachine :: Empty option assignment near: " + arg);
 			}
+			
 			options[argName] = argValue;
 		} else {
 			params.push(arg);
