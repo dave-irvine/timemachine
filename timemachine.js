@@ -45,6 +45,7 @@ repo.exec("log", {
 }).then(function (stdout) {
 	parseRepoCommits(stdout);
 	filterRepoCommits();
+	extractCommitsOutsideTimeRange();
 }).end();
 
 function parseRepoCommits(stdout) {
@@ -80,6 +81,35 @@ function parseRepoCommits(stdout) {
 			prev: linkedCommit.prev
 		}
 	}
+}
+
+function extractCommitsOutsideTimeRange() {
+	commits.forEach(function (commit) {
+		var commitInRange = false,
+			commitDate = new Date(commit.date.getTime());
+
+		commitDate.setSeconds(0);
+
+		options.validCommitTimes.forEach(function (range) {
+			var rangeStartDate = range.start,
+				rangeEndDate = range.end;
+
+			rangeStartDate.setDate(commitDate.getDate());
+			rangeStartDate.setMonth(commitDate.getMonth());
+			rangeStartDate.setFullYear(commitDate.getFullYear());
+
+			rangeEndDate.setDate(commitDate.getDate());
+			rangeEndDate.setMonth(commitDate.getMonth());
+			rangeEndDate.setFullYear(commitDate.getFullYear());
+
+			if (commitDate.getTime() > rangeStartDate.getTime() && commitDate.getTime() < rangeEndDate.getTime()) {
+				commitInRange = true;
+			}
+		});
+
+		console.log("Commit at: " + commit.date + " in range: " + commitInRange);
+	});
+}
 
 function filterRepoCommits() {
 	if (options.onlyCommit) {
