@@ -140,6 +140,29 @@ function generateNewTimestampsForCommits() {
 	});
 }
 
+function isDateInValidRanges(date) {
+	var dateInRanges = false;
+
+	options.validCommitTimes.forEach(function (range) {
+		var rangeStartDate = range.start,
+			rangeEndDate = range.end;
+
+		rangeStartDate.setDate(date.getDate());
+		rangeStartDate.setMonth(date.getMonth());
+		rangeStartDate.setFullYear(date.getFullYear());
+
+		rangeEndDate.setDate(date.getDate());
+		rangeEndDate.setMonth(date.getMonth());
+		rangeEndDate.setFullYear(date.getFullYear());
+
+		if (date.getTime() > rangeStartDate.getTime() && date.getTime() < rangeEndDate.getTime()) {
+			dateInRanges = true;
+		}
+	});
+
+	return dateInRanges;
+}
+
 function extractCommitsOutsideTimeRange() {
 	var invalidCommits = [];
 
@@ -149,22 +172,7 @@ function extractCommitsOutsideTimeRange() {
 
 		commitDate.setSeconds(0);
 
-		options.validCommitTimes.forEach(function (range) {
-			var rangeStartDate = range.start,
-				rangeEndDate = range.end;
-
-			rangeStartDate.setDate(commitDate.getDate());
-			rangeStartDate.setMonth(commitDate.getMonth());
-			rangeStartDate.setFullYear(commitDate.getFullYear());
-
-			rangeEndDate.setDate(commitDate.getDate());
-			rangeEndDate.setMonth(commitDate.getMonth());
-			rangeEndDate.setFullYear(commitDate.getFullYear());
-
-			if (commitDate.getTime() > rangeStartDate.getTime() && commitDate.getTime() < rangeEndDate.getTime()) {
-				commitInRange = true;
-			}
-		});
+		commitInRange = isDateInValidRanges(commitDate);
 
 		if (!commitInRange) {
 			invalidCommits.push(commit);
