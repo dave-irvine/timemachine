@@ -32,6 +32,7 @@ if (options.onlyCommit !== null) {
 }
 
 options.validCommitTimes = parseCommitTimes(options.validCommitTimes);
+
 repoPath = path.resolve(params[0]);
 
 try {
@@ -77,6 +78,7 @@ function parseRepoCommits(stdout) {
 
 		linkedCommits.push(linkedCommit);
 		commitLinkedList[linkedCommit.hash] = {
+			commit: commit,
 			next: linkedCommit.next,
 			prev: linkedCommit.prev
 		}
