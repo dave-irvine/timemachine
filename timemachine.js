@@ -179,7 +179,15 @@ function parseCommitTimes(commitTimes) {
 		range.end.setMinutes(ranges[1].substr(2, 2));
 		range.end.setSeconds(0);
 
-		timeRanges.push(range);
+		if (timeRanges.length === 0) {
+			timeRanges.push(range);
+		} else {
+			if (range.start.getTime() < timeRanges[timeRanges.length-1].start.getTime()) {
+				timeRanges.unshift(range);
+			} else {
+				timeRanges.push(range);
+			}
+		}
 	});
 
 	return timeRanges;
