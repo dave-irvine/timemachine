@@ -44,6 +44,7 @@ repo.exec("log", {
 	pretty: 'format:"%H%x09%an%x09%ad"'
 }).then(function (stdout) {
 	parseRepoCommits(stdout);
+	filterRepoCommits();
 }).end();
 
 function parseRepoCommits(stdout) {
@@ -79,6 +80,8 @@ function parseRepoCommits(stdout) {
 			prev: linkedCommit.prev
 		}
 	}
+
+function filterRepoCommits() {
 	if (options.onlyCommit) {
 		commits = filterCommitsWithHash(commits, options.onlyCommit);
 		if (commits.length < 1) {
