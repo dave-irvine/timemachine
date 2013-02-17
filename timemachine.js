@@ -5,6 +5,7 @@ var Git = require("./lib/git"),
 	repoPath = "",
 	repo = null,
 	commits = [],
+	commitLinkedList = {},
 	options = {
 		validCommitTimes: null,
 		onlyForAuthor: null,
@@ -46,12 +47,38 @@ repo.exec("log", {
 }).end();
 
 function parseRepoCommits(stdout) {
+	var linkedCommits = [];
+
 	clu.outputIter(stdout, function (line) {
 		var commit = line.split("\t");
 		commit = new Git.Commit(commit[0], commit[1], commit[2]);
 		commits.push(commit);
 	});
 
+	for(var c = 0; c < commits.length; c++) {
+		var commit = commits[c],
+			linkedCommit = {};
+
+		linkedCommit.hash = commit.hash;
+
+		if (c === 0) {
+			linkedCommit.next = null;
+		} else {
+			linkedCommit.next = linkedCommits[linkedCommits.length-1].hash;
+		}
+
+		if (c === commits.length-1) {
+			linkedCommit.prev = null;
+		} else {
+			linkedCommit.prev = commits[c+1].hash
+		}
+
+		linkedCommits.push(linkedCommit);
+		commitLinkedList[linkedCommit.hash] = {
+			next: linkedCommit.next,
+			prev: linkedCommit.prev
+		}
+	}
 	if (options.onlyCommit) {
 		commits = filterCommitsWithHash(commits, options.onlyCommit);
 		if (commits.length < 1) {
