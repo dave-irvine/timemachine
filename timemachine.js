@@ -87,12 +87,14 @@ function parseRepoCommits(stdout) {
 }
 
 function generateNewTimestampsForCommits() {
-	var lastNewTimestamp = null;
+	var lastNewTimestamp = null,
+		rangeCounter = 0;
 	// Commits are listed newest first
 	commits.reverse();
 
 	commits.forEach(function (commit) {
 		var linkedCommit = commitLinkedList[commit.hash],
+			currentRange = options.validCommitTimes[rangeCounter],
 			newTimestamp;
 
 		console.log("Commit: " + commit.hash + " is out of range");
@@ -102,14 +104,12 @@ function generateNewTimestampsForCommits() {
 			console.log("This is the first commit");
 
 			newTimestamp = new Date(commit.date.getTime());
-			newTimestamp.setHours(options.validCommitTimes[0].start.getHours());
-			newTimestamp.setMinutes(options.validCommitTimes[0].start.getMinutes());
+			newTimestamp.setHours(currentRange.start.getHours());
+			newTimestamp.setMinutes(currentRange.start.getMinutes());
 
 			commit.newTimestamp = new Date(newTimestamp.getTime());
 
 			lastNewTimestamp = new Date(newTimestamp.getTime());
-		} else if (linkedCommit.next === null) {
-			console.log("This is the last commit");
 		} else {
 			var prevCommit = commitLinkedList[linkedCommit.prev];
 			// Get offset from previous commit
@@ -119,8 +119,8 @@ function generateNewTimestampsForCommits() {
 				console.log("Commit is on a new day, reset timestamp to early");
 
 				newTimestamp = new Date(commit.date.getTime());
-				newTimestamp.setHours(options.validCommitTimes[0].start.getHours());
-				newTimestamp.setMinutes(options.validCommitTimes[0].start.getMinutes());
+				newTimestamp.setHours(currentRange.start.getHours());
+				newTimestamp.setMinutes(currentRange.start.getMinutes());
 			} else {
 				var offsetFromPrev = (commit.date.getTime() - prevCommitDate.getTime());
 
@@ -129,7 +129,17 @@ function generateNewTimestampsForCommits() {
 				newTimestamp = new Date(lastNewTimestamp.getTime() + offsetFromPrev);
 			}
 
-			// TODO: newTimestamp might now fall within an invalid range.
+			if (!isDateInValidRanges(newTimestamp)) {
+				if (rangeCounter < options.validCommitTimes.length - 1) {
+					rangeCounter++;
+					currentRange = options.validCommitTimes[rangeCounter];
+
+					newTimestamp.setHours(currentRange.start.getHours());
+					newTimestamp.setMinutes(currentRange.start.getMinutes());
+				} else {
+					throw new Error("TimeMachine :: Run out of ranges");
+				}
+			}
 
 			commit.newTimestamp = new Date(newTimestamp.getTime());
 			lastNewTimestamp = new Date(newTimestamp.getTime());
