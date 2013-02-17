@@ -47,6 +47,7 @@ repo.exec("log", {
 	parseRepoCommits(stdout);
 	filterRepoCommits();
 	extractCommitsOutsideTimeRange();
+	generateNewTimestampsForCommits();
 }).end();
 
 function parseRepoCommits(stdout) {
@@ -83,6 +84,60 @@ function parseRepoCommits(stdout) {
 			prev: linkedCommit.prev
 		}
 	}
+}
+
+function generateNewTimestampsForCommits() {
+	var lastNewTimestamp = null;
+	// Commits are listed newest first
+	commits.reverse();
+
+	commits.forEach(function (commit) {
+		var linkedCommit = commitLinkedList[commit.hash],
+			newTimestamp;
+
+		console.log("Commit: " + commit.hash + " is out of range");
+		console.log("Commit did have date: " + commit.date);
+
+		if (linkedCommit.prev === null) {
+			console.log("This is the first commit");
+
+			newTimestamp = new Date(commit.date.getTime());
+			newTimestamp.setHours(options.validCommitTimes[0].start.getHours());
+			newTimestamp.setMinutes(options.validCommitTimes[0].start.getMinutes());
+
+			commit.newTimestamp = new Date(newTimestamp.getTime());
+
+			lastNewTimestamp = new Date(newTimestamp.getTime());
+		} else if (linkedCommit.next === null) {
+			console.log("This is the last commit");
+		} else {
+			var prevCommit = commitLinkedList[linkedCommit.prev];
+			// Get offset from previous commit
+			var prevCommitDate = prevCommit.commit.date;
+
+			if (commit.date.getDate() > lastNewTimestamp.getDate()) {
+				console.log("Commit is on a new day, reset timestamp to early");
+
+				newTimestamp = new Date(commit.date.getTime());
+				newTimestamp.setHours(options.validCommitTimes[0].start.getHours());
+				newTimestamp.setMinutes(options.validCommitTimes[0].start.getMinutes());
+			} else {
+				var offsetFromPrev = (commit.date.getTime() - prevCommitDate.getTime());
+
+				console.log("Commit is offset from last commit by: " + offsetFromPrev);
+
+				newTimestamp = new Date(lastNewTimestamp.getTime() + offsetFromPrev);
+			}
+
+			// TODO: newTimestamp might now fall within an invalid range.
+
+			commit.newTimestamp = new Date(newTimestamp.getTime());
+			lastNewTimestamp = new Date(newTimestamp.getTime());
+		}
+
+		console.log("Commit now has date: " + newTimestamp);
+		console.log("");
+	});
 }
 
 function extractCommitsOutsideTimeRange() {
