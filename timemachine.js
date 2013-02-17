@@ -84,6 +84,8 @@ function parseRepoCommits(stdout) {
 }
 
 function extractCommitsOutsideTimeRange() {
+	var invalidCommits = [];
+
 	commits.forEach(function (commit) {
 		var commitInRange = false,
 			commitDate = new Date(commit.date.getTime());
@@ -107,8 +109,12 @@ function extractCommitsOutsideTimeRange() {
 			}
 		});
 
-		console.log("Commit at: " + commit.date + " in range: " + commitInRange);
+		if (!commitInRange) {
+			invalidCommits.push(commit);
+		}
 	});
+
+	commits = invalidCommits;
 }
 
 function filterRepoCommits() {
