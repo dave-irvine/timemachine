@@ -137,7 +137,8 @@ function generateNewTimestampsForCommits() {
 					newTimestamp.setHours(currentRange.start.getHours());
 					newTimestamp.setMinutes(currentRange.start.getMinutes());
 				} else {
-					throw new Error("TimeMachine :: Run out of ranges");
+					rangeCounter = 0;
+					//throw new Error("TimeMachine :: Run out of ranges");
 				}
 			}
 
