@@ -93,18 +93,18 @@ function applyNewTimestampsForCommits() {
 		result;
 
 	commits.forEach(function (commit) {
-		if (!result) {
-			result = 1;
-		} else {
-			sequence.push(function() { return clu.exec(repo.work_dir, "git", ["set-commit-date", commit.hash, '"' + commit.newTimestamp + '"']) });
-		}
+		sequence.push(function() { return clu.exec(repo.work_dir, "git", ["set-commit-date", commit.hash, '"' + commit.newTimestamp + '"']) });
 	});
 
-	result = Q.resolve(sequence.shift());
+	if (commits.length > 0) {
+		result = Q.resolve(sequence.shift()());
 
-	sequence.forEach(function (f) {
-		result = result.then(f);
-	});
+		sequence.forEach(function (f) {
+			result = result.then(f);
+		});
+	} else {
+		console.log("No commits out of valid time range. Stop.");
+	}
 }
 
 function generateNewTimestampsForCommits() {
