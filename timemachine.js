@@ -2,6 +2,7 @@
 var Git = require("./lib/git"),
 	path = require("path"),
 	clu = require("./lib/clu"),
+	Q = require("q"),
 	repoPath = "",
 	repo = null,
 	commits = [],
@@ -48,6 +49,7 @@ repo.exec("log", {
 	filterRepoCommits();
 	extractCommitsOutsideTimeRange();
 	generateNewTimestampsForCommits();
+	applyNewTimestampsForCommits();
 }).end();
 
 function parseRepoCommits(stdout) {
@@ -84,6 +86,25 @@ function parseRepoCommits(stdout) {
 			prev: linkedCommit.prev
 		}
 	}
+}
+
+function applyNewTimestampsForCommits() {
+	var sequence = [],
+		result;
+
+	commits.forEach(function (commit) {
+		if (!result) {
+			result = 1;
+		} else {
+			sequence.push(function() { return clu.exec(repo.work_dir, "git", ["set-commit-date", commit.hash, '"' + commit.newTimestamp + '"']) });
+		}
+	});
+
+	result = Q.resolve(sequence.shift());
+
+	sequence.forEach(function (f) {
+		result = result.then(f);
+	});
 }
 
 function generateNewTimestampsForCommits() {
