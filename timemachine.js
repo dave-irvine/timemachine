@@ -122,11 +122,13 @@ function generateNewTimestampsForCommits() {
 		console.log("Commit did have date: " + commit.date);
 
 		if (linkedCommit.prev === null) {
-			console.log("This is the first commit");
-
 			newTimestamp = new Date(commit.date.getTime());
 			newTimestamp.setHours(currentRange.start.getHours());
 			newTimestamp.setMinutes(currentRange.start.getMinutes());
+
+			if (newTimestamp.getMinutes() === 0) {
+				newTimestamp.setMinutes(1);
+			}
 
 			commit.newTimestamp = new Date(newTimestamp.getTime());
 
@@ -136,18 +138,26 @@ function generateNewTimestampsForCommits() {
 			// Get offset from previous commit
 			var prevCommitDate = prevCommit.commit.date;
 
-			if (commit.date.getDate() > lastNewTimestamp.getDate()) {
-				console.log("Commit is on a new day, reset timestamp to early");
-
+			if (!lastNewTimestamp) {
 				newTimestamp = new Date(commit.date.getTime());
 				newTimestamp.setHours(currentRange.start.getHours());
 				newTimestamp.setMinutes(currentRange.start.getMinutes());
+
+				if (newTimestamp.getMinutes() === 0) {
+					newTimestamp.setMinutes(1);
+				}
 			} else {
-				var offsetFromPrev = (commit.date.getTime() - prevCommitDate.getTime());
+				if (commit.date.getDate() > lastNewTimestamp.getDate()) {
+					newTimestamp = new Date(commit.date.getTime());
+					newTimestamp.setHours(currentRange.start.getHours());
+					newTimestamp.setMinutes(currentRange.start.getMinutes());
+				} else {
+					var offsetFromPrev = (commit.date.getTime() - prevCommitDate.getTime());
 
-				console.log("Commit is offset from last commit by: " + offsetFromPrev);
+					//console.log("Commit is offset from last commit by: " + offsetFromPrev);
 
-				newTimestamp = new Date(lastNewTimestamp.getTime() + offsetFromPrev);
+					newTimestamp = new Date(lastNewTimestamp.getTime() + offsetFromPrev);
+				}
 			}
 
 			if (!isDateInValidRanges(newTimestamp)) {
@@ -161,6 +171,10 @@ function generateNewTimestampsForCommits() {
 					rangeCounter = 0;
 					//throw new Error("TimeMachine :: Run out of ranges");
 				}
+			}
+
+			if (newTimestamp.getMinutes() === 0) {
+				newTimestamp.setMinutes(1);
 			}
 
 			commit.newTimestamp = new Date(newTimestamp.getTime());
