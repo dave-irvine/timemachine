@@ -172,6 +172,9 @@ function generateNewTimestampsForCommits() {
 					newTimestamp.setMinutes(currentRange.start.getMinutes());
 				} else {
 					rangeCounter = 0;
+					currentRange = options.validCommitTimes[rangeCounter];
+					newTimestamp.setHours(currentRange.start.getHours());
+					newTimestamp.setMinutes(currentRange.start.getMinutes());
 					//throw new Error("TimeMachine :: Run out of ranges");
 				}
 			}
