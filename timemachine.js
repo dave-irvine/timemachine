@@ -204,7 +204,7 @@ function isDateInValidRanges(date) {
 		rangeEndDate.setMonth(date.getMonth());
 		rangeEndDate.setFullYear(date.getFullYear());
 
-		if (date.getTime() > rangeStartDate.getTime() && date.getTime() < rangeEndDate.getTime()) {
+		if (date.getTime() >= rangeStartDate.getTime() && date.getTime() <= rangeEndDate.getTime()) {
 			dateInRanges = true;
 		}
 	});
