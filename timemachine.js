@@ -89,7 +89,7 @@ function parseRepoCommits(stdout) {
 function generateNewTimestampsForCommits() {
 	var lastNewTimestamp = null,
 		rangeCounter = 0;
-	// Commits are listed newest first
+	// Commits are listed newest first, but we want to work oldest first
 	commits.reverse();
 
 	commits.forEach(function (commit) {
@@ -149,6 +149,9 @@ function generateNewTimestampsForCommits() {
 		console.log("Commit now has date: " + newTimestamp);
 		console.log("");
 	});
+
+	// Restore commits to their original order
+	commits.reverse();
 }
 
 function isDateInValidRanges(date) {
