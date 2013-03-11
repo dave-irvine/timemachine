@@ -148,6 +148,9 @@ function generateNewTimestampsForCommits() {
 				}
 			} else {
 				if (commit.date.getDate() > lastNewTimestamp.getDate()) {
+					rangeCounter = 0;
+					currentRange = options.validCommitTimes[rangeCounter];
+
 					newTimestamp = new Date(commit.date.getTime());
 					newTimestamp.setHours(currentRange.start.getHours());
 					newTimestamp.setMinutes(currentRange.start.getMinutes());
