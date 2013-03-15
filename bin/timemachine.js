@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 var Git = require("./lib/git"),
 	path = require("path"),
 	clu = require("./lib/clu"),
