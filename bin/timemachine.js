@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-var Git = require("./lib/git"),
+var Git = require("../lib/git"),
 	path = require("path"),
-	clu = require("./lib/clu"),
+	clu = require("../lib/clu"),
 	Q = require("q"),
 	repoPath = "",
 	repo = null,
