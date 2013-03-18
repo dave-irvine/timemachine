@@ -56,7 +56,8 @@ var sequence = [
 	function () { return create_git_repo("test/testbed/fixtures/simple"); },
 	function () { return create_git_repo("test/testbed/fixtures/bare", true); },
 	function () { return create_git_repo("test/testbed/fixtures/withLogs"); },
-	function () { return create_git_commit("test/testbed/fixtures/withLogs", true, "1st commit."); }
+	function () { return create_git_commit("test/testbed/fixtures/withLogs", true, "1st commit."); },
+	function () { return create_git_commit("test/testbed/fixtures/withLogs", true, "2nd commit."); }
 ];
 
 var result = Q.resolve(create_directory("test/testbed/fixtures"));
