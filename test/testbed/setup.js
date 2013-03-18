@@ -9,6 +9,10 @@ var create_directory = function (path) {
 	return clu.exec(".", "mkdir", [path]).then(function (stdout) { console.log(stdout); });
 };
 
+var remove_directory = function (path) {
+	return clu.exec(".", "rm", ["-rf", path]).then(function (stdout) { console.log(stdout); });
+};
+
 var create_git_repo = function (path, bare) {
 	if (!bare) { bare = false; }
 
@@ -53,6 +57,7 @@ var create_git_commit = function (path, empty, message) {
 };
 
 var sequence = [
+	function () { return create_directory("test/testbed/fixtures"); },
 	function () { return create_git_repo("test/testbed/fixtures/simple"); },
 	function () { return create_git_repo("test/testbed/fixtures/bare", true); },
 	function () { return create_git_repo("test/testbed/fixtures/withLogs"); },
@@ -60,7 +65,7 @@ var sequence = [
 	function () { return create_git_commit("test/testbed/fixtures/withLogs", true, "2nd commit."); }
 ];
 
-var result = Q.resolve(create_directory("test/testbed/fixtures"));
+var result = Q.resolve(remove_directory("test/testbed/fixtures"));
 
 sequence.forEach(function (f) {
 	result = result.then(f);
